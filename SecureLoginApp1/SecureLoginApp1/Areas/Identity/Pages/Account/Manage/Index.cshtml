@@ -1,0 +1,16 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Manage your account";
+}
+
+<h1>Manage your account</h1>
+
+<div>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>User Name:</strong> @Model.UserName</p>
+</div>
+
+<div>
+    <a asp-page="/Account/Manage/ChangePassword" asp-area="Identity" class="btn btn-link">Change your password</a>
+</div>
