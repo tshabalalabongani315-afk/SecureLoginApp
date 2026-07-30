@@ -2,13 +2,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SecureLoginApp1.Models;
 
 [Authorize]
 public class IndexModel : PageModel
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public IndexModel(UserManager<IdentityUser> userManager)
+    public IndexModel(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }

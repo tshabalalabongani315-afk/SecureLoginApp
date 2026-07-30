@@ -1,16 +1,17 @@
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SecureLoginApp1.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 [AllowAnonymous]
 public class LoginModel : PageModel
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public LoginModel(SignInManager<IdentityUser> signInManager)
+    public LoginModel(SignInManager<ApplicationUser> signInManager)
     {
         _signInManager = signInManager;
     }
