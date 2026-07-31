@@ -61,11 +61,18 @@ public class LoginModel : PageModel
         var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            // Best-effort update of LastLogin; do not block sign-in if it fails
-            var user = await _userService.GetCurrentUserAsync(User);
-            if (user != null)
+            // Best-effort update of LastLogin; find user by email (User principal may not be populated yet in same request)
+            try
             {
-                await _userService.UpdateLastLoginAsync(user);
+                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                if (user != null)
+                {
+                    await _userService.UpdateLastLoginAsync(user);
+                }
+            }
+            catch
+            {
+                // Swallow exceptions to avoid blocking sign-in
             }
 
             return LocalRedirect(returnUrl);
