@@ -17,6 +17,9 @@
         <a class="nav-link text-dark" asp-page="/Profile" title="Profile">Profile</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link text-dark" asp-page="/Settings" title="Settings">Settings</a>
+    </li>
+    <li class="nav-item">
         <span class="nav-link text-dark">@User.Identity?.Name</span>
     </li>
     <li class="nav-item">
@@ -27,6 +30,9 @@
 }
 else
 {
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-page="/Index" title="Home">Home</a>
+    </li>
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>
