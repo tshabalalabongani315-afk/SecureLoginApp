@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,14 @@ public class RegisterModel : PageModel
     public class InputModel
     {
         [Required]
+        [Display(Name = "First name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last name")]
+        public string LastName { get; set; }
+
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -47,16 +56,27 @@ public class RegisterModel : PageModel
 
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
-        returnUrl ??= Url.Content("~/");
+        // Redirect users to Dashboard after successful registration by default
+        returnUrl ??= Url.Content("~/Dashboard");
+
         if (!ModelState.IsValid)
         {
             return Page();
         }
 
-        var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+        var user = new ApplicationUser
+        {
+            UserName = Input.Email,
+            Email = Input.Email,
+            FirstName = Input.FirstName,
+            LastName = Input.LastName,
+            CreatedDate = DateTime.UtcNow
+        };
+
         var result = await _userManager.CreateAsync(user, Input.Password);
         if (result.Succeeded)
         {
+            // Sign in and redirect to Dashboard
             await _signInManager.SignInAsync(user, isPersistent: false);
             return LocalRedirect(returnUrl);
         }
