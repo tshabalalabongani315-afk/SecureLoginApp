@@ -20,7 +20,7 @@
         <span class="nav-link text-dark">@User.Identity?.Name</span>
     </li>
     <li class="nav-item">
-        <form class="d-inline" asp-page="/Account/Logout" asp-page-handler="Logout" method="post">
+        <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" method="post">
             <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
         </form>
     </li>

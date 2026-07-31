@@ -18,6 +18,8 @@ public class LogoutModel : PageModel
     public async Task<IActionResult> OnPost(string returnUrl = null)
     {
         await _signInManager.SignOutAsync();
+        // Provide a confirmation message to the next request
+        TempData["StatusMessage"] = "You have been logged out.";
         if (returnUrl != null)
         {
             return LocalRedirect(returnUrl);
