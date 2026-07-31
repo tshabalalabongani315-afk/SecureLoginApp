@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SecureLoginApp1.Data;
 using SecureLoginApp1.Models;
+using SecureLoginApp1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -36,6 +38,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
