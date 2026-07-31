@@ -23,6 +23,9 @@ public class RegisterModel : PageModel
 
     public string ReturnUrl { get; set; }
 
+    [Microsoft.AspNetCore.Mvc.TempData]
+    public string StatusMessage { get; set; }
+
     public class InputModel
     {
         [Required]

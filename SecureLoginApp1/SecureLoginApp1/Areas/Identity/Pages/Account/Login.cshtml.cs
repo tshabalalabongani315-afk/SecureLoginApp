@@ -75,6 +75,9 @@ public class LoginModel : PageModel
                 // Swallow exceptions to avoid blocking sign-in
             }
 
+            // Set a confirmation message for successful login
+            TempData["StatusMessage"] = "You have signed in successfully.";
+
             return LocalRedirect(returnUrl);
         }
 

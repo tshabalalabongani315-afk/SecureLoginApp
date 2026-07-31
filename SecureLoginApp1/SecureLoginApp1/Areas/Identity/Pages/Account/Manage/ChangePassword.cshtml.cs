@@ -68,6 +68,8 @@ public class ChangePasswordModel : PageModel
         }
 
         await _signInManager.RefreshSignInAsync(user);
+        // Provide confirmation message that password change succeeded
+        TempData["StatusMessage"] = "Your password has been changed.";
         return RedirectToPage("/Account/Manage/Index", new { area = "Identity" });
     }
 }
