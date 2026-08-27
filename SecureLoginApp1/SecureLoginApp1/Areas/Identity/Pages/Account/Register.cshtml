@@ -4,10 +4,31 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="auth-split">
-    <div class="auth-split__brand">
-        <h2 class="mb-3">SecureUserPortal</h2>
-        <p class="mb-0">Create an account to get a personal dashboard, activity history, and account security tools like two-factor authentication.</p>
+<h1>Register</h1>
+
+<form method="post">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label asp-for="Input.FirstName"></label>
+            <input asp-for="Input.FirstName" class="form-control" />
+            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Input.LastName"></label>
+            <input asp-for="Input.LastName" class="form-control" />
+            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
     </div>
     <div class="auth-split__form">
         <h1 class="h3 mb-4">Register</h1>
