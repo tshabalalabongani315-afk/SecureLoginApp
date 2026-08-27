@@ -37,6 +37,8 @@ builder.Services.AddScoped<IEventHandler<UserLoggedInEvent>, UserLoggedInActivit
 builder.Services.AddScoped<IEventHandler<PasswordChangedEvent>, PasswordChangedActivityHandler>();
 builder.Services.AddScoped<IEventHandler<ProfileUpdatedEvent>, ProfileUpdatedActivityHandler>();
 
+builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

@@ -86,6 +86,17 @@ public class LoginModel : PageModel
             return LocalRedirect(returnUrl);
         }
 
+        if (result.RequiresTwoFactor)
+        {
+            return RedirectToPage("./LoginWith2fa", new { area = "Identity", ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+        }
+
+        if (result.IsLockedOut)
+        {
+            ModelState.AddModelError(string.Empty, "This account is locked out.");
+            return Page();
+        }
+
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
         return Page();
     }

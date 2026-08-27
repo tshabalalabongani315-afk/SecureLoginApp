@@ -87,6 +87,11 @@ namespace SecureLoginApp1.Pages
         public bool EmailConfirmed { get; private set; }
 
         /// <summary>
+        /// Gets whether the user has authenticator-app two-factor authentication enabled.
+        /// </summary>
+        public bool TwoFactorEnabled { get; private set; }
+
+        /// <summary>
         /// Gets the initials to use as a placeholder avatar.
         /// </summary>
         public string Initials { get; private set; } = string.Empty;
@@ -142,6 +147,7 @@ namespace SecureLoginApp1.Pages
             LastLogin = user.LastLogin;
             ProfileImageUrl = user.ProfileImageUrl;
             EmailConfirmed = user.EmailConfirmed;
+            TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
             Initials = BuildInitials(user.FirstName, user.LastName);
 
             DaysAsMember = (int)(DateTime.UtcNow - CreatedDate).TotalDays;

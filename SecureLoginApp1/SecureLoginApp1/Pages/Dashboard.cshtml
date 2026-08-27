@@ -77,6 +77,7 @@
                             <h6 class="card-title">Security</h6>
                             <p class="card-text">Change your password or manage account security settings.</p>
                             <a class="btn btn-outline-primary" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">Change Password</a>
+                            <a class="btn btn-outline-secondary" asp-area="Identity" asp-page="/Account/Manage/TwoFactorAuthentication">Two-Factor Auth</a>
                         </div>
                     </div>
                 </div>
@@ -143,6 +144,23 @@
                 <div class="card-body">
                     <h5 class="card-title">Authentication</h5>
                     <p class="display-6">@Model.AuthenticationMethod</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Two-Factor Auth</h5>
+                    <p class="display-6">
+                        @if (Model.TwoFactorEnabled)
+                        {
+                            <span class="badge bg-success">Enabled</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Not enabled</span>
+                        }
+                    </p>
                 </div>
             </div>
         </div>

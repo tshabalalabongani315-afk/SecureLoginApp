@@ -13,6 +13,7 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 - User profile management
 - Change password
 - Event-driven activity logging (real Dashboard timeline)
+- Two-factor authentication (TOTP authenticator apps)
 - Role-based authorization
 - Dashboard for authenticated users
 - Responsive UI
@@ -78,7 +79,6 @@ wwwroot/
 
 - Profile image upload
 - Dark mode
-- Two-factor authentication
 - Admin dashboard
 - Activity logs
 - REST API
