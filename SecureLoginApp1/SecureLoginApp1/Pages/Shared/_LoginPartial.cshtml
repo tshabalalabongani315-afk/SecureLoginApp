@@ -7,6 +7,7 @@
 <ul class="navbar-nav ms-auto">
 @if (SignInManager.IsSignedIn(User))
 {
+    var currentUser = await UserManager.GetUserAsync(User);
     <li class="nav-item">
         <a class="nav-link text-dark" asp-page="/Dashboard" title="Dashboard">Dashboard</a>
     </li>
@@ -16,7 +17,11 @@
     <li class="nav-item">
         <a class="nav-link text-dark" asp-page="/Settings" title="Settings">Settings</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item d-flex align-items-center">
+        @if (!string.IsNullOrEmpty(currentUser?.ProfileImageUrl))
+        {
+            <img src="@currentUser.ProfileImageUrl" alt="Profile" class="rounded-circle me-1" style="width:28px;height:28px;object-fit:cover;" />
+        }
         <span class="nav-link text-dark">@User.Identity?.Name</span>
     </li>
     <li class="nav-item">

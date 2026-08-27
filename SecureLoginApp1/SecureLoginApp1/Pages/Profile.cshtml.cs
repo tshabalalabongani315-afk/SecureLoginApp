@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SecureLoginApp1.Exceptions;
 using SecureLoginApp1.Models;
 using SecureLoginApp1.Models.Events;
 using SecureLoginApp1.Services;
+using SecureLoginApp1.Services.Storage;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -13,18 +17,24 @@ using System.Threading.Tasks;
 [Authorize]
 public class ProfileModel : PageModel
 {
+    private static readonly HashSet<string> AllowedContentTypes = new() { "image/jpeg", "image/png" };
+    private const long MaxProfileImageBytes = 2 * 1024 * 1024;
+
     private readonly IUserService _userService;
     private readonly IEventPublisher _eventPublisher;
+    private readonly IFileStorageService _fileStorageService;
 
     /// <summary>
     /// Initializes a new instance of the ProfileModel class.
     /// </summary>
     /// <param name="userService">The UserService for retrieving and updating user information.</param>
     /// <param name="eventPublisher">Publishes domain events (e.g. profile updated) for activity logging.</param>
-    public ProfileModel(IUserService userService, IEventPublisher eventPublisher)
+    /// <param name="fileStorageService">Persists the uploaded profile photo.</param>
+    public ProfileModel(IUserService userService, IEventPublisher eventPublisher, IFileStorageService fileStorageService)
     {
         _userService = userService;
         _eventPublisher = eventPublisher;
+        _fileStorageService = fileStorageService;
     }
 
     /// <summary>
@@ -32,6 +42,17 @@ public class ProfileModel : PageModel
     /// </summary>
     [BindProperty]
     public InputModel Input { get; set; }
+
+    /// <summary>
+    /// Gets or sets the profile photo to upload, if the user chose one.
+    /// </summary>
+    [BindProperty]
+    public IFormFile? ProfileImage { get; set; }
+
+    /// <summary>
+    /// Gets the current profile image URL, if any.
+    /// </summary>
+    public string? ProfileImageUrl { get; private set; }
 
     /// <summary>
     /// Gets or sets the success message displayed after profile update.
@@ -90,6 +111,7 @@ public class ProfileModel : PageModel
                 Email = user.Email ?? string.Empty,
                 PhoneNumber = user.PhoneNumber ?? string.Empty
             };
+            ProfileImageUrl = user.ProfileImageUrl;
         }
     }
 
@@ -109,6 +131,31 @@ public class ProfileModel : PageModel
             return RedirectToPage("/Index");
         }
 
+        if (ProfileImage != null)
+        {
+            try
+            {
+                ValidateProfileImage(ProfileImage);
+                var previousImageUrl = user.ProfileImageUrl;
+
+                using (var stream = ProfileImage.OpenReadStream())
+                {
+                    user.ProfileImageUrl = await _fileStorageService.SaveAsync(stream, ProfileImage.FileName, ProfileImage.ContentType);
+                }
+
+                if (!string.IsNullOrEmpty(previousImageUrl))
+                {
+                    await _fileStorageService.DeleteAsync(previousImageUrl);
+                }
+            }
+            catch (FileValidationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ProfileImageUrl = user.ProfileImageUrl;
+                return Page();
+            }
+        }
+
         // Update user properties
         user.FirstName = Input.FirstName;
         user.LastName = Input.LastName;
@@ -118,6 +165,7 @@ public class ProfileModel : PageModel
         var success = await _userService.UpdateUserAsync(user);
         if (success)
         {
+            ProfileImageUrl = user.ProfileImageUrl;
             try
             {
                 await _eventPublisher.PublishAsync(new ProfileUpdatedEvent(user.Id));
@@ -133,5 +181,23 @@ public class ProfileModel : PageModel
 
         ModelState.AddModelError(string.Empty, "An error occurred while saving your profile. Please try again.");
         return Page();
+    }
+
+    private static void ValidateProfileImage(IFormFile file)
+    {
+        if (file.Length == 0)
+        {
+            throw new FileValidationException("The selected file is empty.");
+        }
+
+        if (file.Length > MaxProfileImageBytes)
+        {
+            throw new FileValidationException("Profile photos must be 2MB or smaller.");
+        }
+
+        if (!AllowedContentTypes.Contains(file.ContentType))
+        {
+            throw new FileValidationException("Profile photos must be a JPG or PNG image.");
+        }
     }
 }

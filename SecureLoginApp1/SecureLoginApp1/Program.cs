@@ -5,6 +5,7 @@ using SecureLoginApp1.Models;
 using SecureLoginApp1.Models.Events;
 using SecureLoginApp1.Services;
 using SecureLoginApp1.Services.EventHandlers;
+using SecureLoginApp1.Services.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,8 @@ builder.Services.AddScoped<IEventHandler<PasswordChangedEvent>, PasswordChangedA
 builder.Services.AddScoped<IEventHandler<ProfileUpdatedEvent>, ProfileUpdatedActivityHandler>();
 
 builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
+
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
 builder.Services.AddRazorPages();
 
