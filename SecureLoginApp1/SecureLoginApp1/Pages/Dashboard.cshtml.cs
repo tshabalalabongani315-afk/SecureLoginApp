@@ -1,9 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
 using SecureLoginApp1.Models;
 using SecureLoginApp1.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace SecureLoginApp1.Pages
@@ -14,15 +20,23 @@ namespace SecureLoginApp1.Pages
     [Authorize]
     public class DashboardModel : PageModel
     {
+        private static readonly TimeSpan ResendCooldown = TimeSpan.FromSeconds(60);
+
         private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailSender _emailSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardModel"/> class.
         /// </summary>
         /// <param name="userService">Service used to retrieve and update user information.</param>
-        public DashboardModel(IUserService userService)
+        /// <param name="userManager">Used to generate email confirmation tokens for the resend action.</param>
+        /// <param name="emailSender">Used to resend the confirmation email.</param>
+        public DashboardModel(IUserService userService, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             Activity = new List<ActivityEntry>();
         }
 
@@ -60,6 +74,11 @@ namespace SecureLoginApp1.Pages
         /// Gets the profile image URL when available.
         /// </summary>
         public string? ProfileImageUrl { get; private set; }
+
+        /// <summary>
+        /// Gets whether the user's email address has been confirmed.
+        /// </summary>
+        public bool EmailConfirmed { get; private set; }
 
         /// <summary>
         /// Gets the initials to use as a placeholder avatar.
@@ -121,6 +140,7 @@ namespace SecureLoginApp1.Pages
             CreatedDate = user.CreatedDate;
             LastLogin = user.LastLogin;
             ProfileImageUrl = user.ProfileImageUrl;
+            EmailConfirmed = user.EmailConfirmed;
             Initials = BuildInitials(user.FirstName, user.LastName);
 
             DaysAsMember = (int)(DateTime.UtcNow - CreatedDate).TotalDays;
@@ -134,6 +154,48 @@ namespace SecureLoginApp1.Pages
             }
             // ProfileUpdated is not tracked explicitly; show placeholder when not available
             Activity.Add(new ActivityEntry("Profile Updated", null, "Not tracked"));
+        }
+
+        /// <summary>
+        /// Resends the email confirmation link, rate-limited to once per <see cref="ResendCooldown"/>.
+        /// </summary>
+        public async Task<IActionResult> OnPostResendConfirmationAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToPage();
+            }
+
+            if (user.EmailConfirmed)
+            {
+                return RedirectToPage();
+            }
+
+            if (TempData["LastConfirmationResendUtc"] is string lastSentRaw &&
+                DateTime.TryParse(lastSentRaw, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var lastSent) &&
+                DateTime.UtcNow - lastSent < ResendCooldown)
+            {
+                TempData["StatusMessage"] = "Please wait a minute before requesting another confirmation email.";
+                return RedirectToPage();
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = user.Id, code = encodedToken },
+                protocol: Request.Scheme);
+
+            await _emailSender.SendEmailAsync(
+                user.Email!,
+                "Confirm your email",
+                $"Please confirm your SecureUserPortal account by <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>clicking here</a>.");
+
+            TempData["LastConfirmationResendUtc"] = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
+            TempData["StatusMessage"] = "Confirmation email sent. Check your inbox.";
+            return RedirectToPage();
         }
 
         private static string BuildInitials(string? firstName, string? lastName)

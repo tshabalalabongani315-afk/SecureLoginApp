@@ -5,6 +5,7 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 ## Features
 
 - Secure user registration
+- Email confirmation with resend flow
 - User login and logout
 - ASP.NET Core Identity authentication
 - Password hashing
@@ -27,6 +28,8 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 - HTML5
 - CSS3
 - JavaScript
+- MailKit
+- xUnit + Moq
 
 ## Screenshots
 
@@ -73,7 +76,6 @@ wwwroot/
 
 - Profile image upload
 - Dark mode
-- Email verification
 - Password reset
 - Two-factor authentication
 - Admin dashboard
