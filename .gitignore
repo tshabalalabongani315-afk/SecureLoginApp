@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# User-uploaded profile photos (local file storage)
+SecureLoginApp1/SecureLoginApp1/wwwroot/uploads/

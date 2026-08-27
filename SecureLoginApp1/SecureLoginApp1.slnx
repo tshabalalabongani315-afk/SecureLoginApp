@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="SecureLoginApp1/SecureLoginApp1.csproj" />
+  <Project Path="SecureUserPortal.Tests/SecureUserPortal.Tests.csproj" />
 </Solution>

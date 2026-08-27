@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "SecureLoginApp1",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SecureLoginApp1/SecureLoginApp1/SecureLoginApp1.csproj", "--launch-profile", "http"],
+      "port": 5120
+    }
+  ]
+}

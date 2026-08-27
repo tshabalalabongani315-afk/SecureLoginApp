@@ -1,0 +1,18 @@
+@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<h1>Confirm email</h1>
+
+@if (Model.Succeeded)
+{
+    <p>Your email has been confirmed. You can now sign in.</p>
+    <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">Go to login</a>
+}
+else
+{
+    <p class="text-danger">We couldn't confirm your email. The link may have expired or already been used.</p>
+    <a class="btn btn-outline-primary" asp-area="" asp-page="/Dashboard">Back to dashboard</a>
+}

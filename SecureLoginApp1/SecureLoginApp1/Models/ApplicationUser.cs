@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace SecureLoginApp1.Models
 {
@@ -8,7 +9,7 @@ namespace SecureLoginApp1.Models
 
         public string LastName { get; set; } = string.Empty;
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastLogin { get; set; }
 
