@@ -5,17 +5,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SecureLoginApp1.Models;
+using SecureLoginApp1.Models.Events;
+using SecureLoginApp1.Services;
 
 [Authorize]
 public class ChangePasswordModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IEventPublisher _eventPublisher;
 
-    public ChangePasswordModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public ChangePasswordModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEventPublisher eventPublisher)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _eventPublisher = eventPublisher;
     }
 
     [BindProperty]
@@ -68,6 +72,16 @@ public class ChangePasswordModel : PageModel
         }
 
         await _signInManager.RefreshSignInAsync(user);
+
+        try
+        {
+            await _eventPublisher.PublishAsync(new PasswordChangedEvent(user.Id));
+        }
+        catch
+        {
+            // Best-effort: a logging failure must not surface as a failed password change.
+        }
+
         // Provide confirmation message that password change succeeded
         TempData["StatusMessage"] = "Your password has been changed.";
         return RedirectToPage("/Account/Manage/Index", new { area = "Identity" });

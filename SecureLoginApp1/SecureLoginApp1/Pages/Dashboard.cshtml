@@ -101,7 +101,7 @@
                                 {
                                     <li>
                                         <strong>@act.Title</strong>
-                                        <div class="text-muted small">@((act.Timestamp.HasValue) ? act.Timestamp.Value.ToString("g") : act.Details)</div>
+                                        <div class="text-muted small">@((act.TimestampUtc.HasValue) ? act.TimestampUtc.Value.ToString("g") : act.Details)</div>
                                     </li>
                                     <hr />
                                 }

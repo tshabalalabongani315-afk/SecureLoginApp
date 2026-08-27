@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SecureLoginApp1.Models;
+using SecureLoginApp1.Models.Events;
 using SecureLoginApp1.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -12,16 +13,19 @@ public class LoginModel : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IUserService _userService;
+    private readonly IEventPublisher _eventPublisher;
 
     /// <summary>
     /// Initializes a new instance of the LoginModel class.
     /// </summary>
     /// <param name="signInManager">The SignInManager for authenticating users.</param>
     /// <param name="userService">The UserService for updating user LastLogin.</param>
-    public LoginModel(SignInManager<ApplicationUser> signInManager, IUserService userService)
+    /// <param name="eventPublisher">Publishes domain events (e.g. login) for activity logging.</param>
+    public LoginModel(SignInManager<ApplicationUser> signInManager, IUserService userService, IEventPublisher eventPublisher)
     {
         _signInManager = signInManager;
         _userService = userService;
+        _eventPublisher = eventPublisher;
     }
 
     [BindProperty]
@@ -68,6 +72,7 @@ public class LoginModel : PageModel
                 if (user != null)
                 {
                     await _userService.UpdateLastLoginAsync(user);
+                    await _eventPublisher.PublishAsync(new UserLoggedInEvent(user.Id));
                 }
             }
             catch

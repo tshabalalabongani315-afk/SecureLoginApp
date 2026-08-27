@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SecureLoginApp1.Models;
+using SecureLoginApp1.Models.Events;
 using SecureLoginApp1.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -13,14 +14,17 @@ using System.Threading.Tasks;
 public class ProfileModel : PageModel
 {
     private readonly IUserService _userService;
+    private readonly IEventPublisher _eventPublisher;
 
     /// <summary>
     /// Initializes a new instance of the ProfileModel class.
     /// </summary>
     /// <param name="userService">The UserService for retrieving and updating user information.</param>
-    public ProfileModel(IUserService userService)
+    /// <param name="eventPublisher">Publishes domain events (e.g. profile updated) for activity logging.</param>
+    public ProfileModel(IUserService userService, IEventPublisher eventPublisher)
     {
         _userService = userService;
+        _eventPublisher = eventPublisher;
     }
 
     /// <summary>
@@ -68,7 +72,7 @@ public class ProfileModel : PageModel
         [Phone(ErrorMessage = "Please enter a valid phone number.")]
         [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters.")]
         [Display(Name = "Phone Number")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 
     /// <summary>
@@ -114,6 +118,15 @@ public class ProfileModel : PageModel
         var success = await _userService.UpdateUserAsync(user);
         if (success)
         {
+            try
+            {
+                await _eventPublisher.PublishAsync(new ProfileUpdatedEvent(user.Id));
+            }
+            catch
+            {
+                // Best-effort: a logging failure must not surface as a failed profile save.
+            }
+
             SuccessMessage = "Your profile has been successfully updated.";
             return Page();
         }

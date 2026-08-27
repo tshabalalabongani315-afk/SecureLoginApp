@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SecureLoginApp1.Data;
 using SecureLoginApp1.Models;
+using SecureLoginApp1.Models.Events;
 using SecureLoginApp1.Services;
+using SecureLoginApp1.Services.EventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,12 @@ else
 {
     builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 }
+
+builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
+builder.Services.AddScoped<IEventPublisher, InMemoryEventPublisher>();
+builder.Services.AddScoped<IEventHandler<UserLoggedInEvent>, UserLoggedInActivityHandler>();
+builder.Services.AddScoped<IEventHandler<PasswordChangedEvent>, PasswordChangedActivityHandler>();
+builder.Services.AddScoped<IEventHandler<ProfileUpdatedEvent>, ProfileUpdatedActivityHandler>();
 
 builder.Services.AddRazorPages();
 

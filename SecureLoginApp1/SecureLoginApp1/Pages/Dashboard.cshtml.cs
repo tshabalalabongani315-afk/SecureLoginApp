@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using SecureLoginApp1.Models;
 using SecureLoginApp1.Services;
+using SecureLoginApp1.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -21,10 +23,12 @@ namespace SecureLoginApp1.Pages
     public class DashboardModel : PageModel
     {
         private static readonly TimeSpan ResendCooldown = TimeSpan.FromSeconds(60);
+        private const int MaxActivityEntries = 8;
 
         private readonly IUserService _userService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IActivityLogService _activityLogService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardModel"/> class.
@@ -32,12 +36,14 @@ namespace SecureLoginApp1.Pages
         /// <param name="userService">Service used to retrieve and update user information.</param>
         /// <param name="userManager">Used to generate email confirmation tokens for the resend action.</param>
         /// <param name="emailSender">Used to resend the confirmation email.</param>
-        public DashboardModel(IUserService userService, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        /// <param name="activityLogService">Supplies the real activity feed for the timeline panel.</param>
+        public DashboardModel(IUserService userService, UserManager<ApplicationUser> userManager, IEmailSender emailSender, IActivityLogService activityLogService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
-            Activity = new List<ActivityEntry>();
+            _activityLogService = activityLogService ?? throw new ArgumentNullException(nameof(activityLogService));
+            Activity = new List<ActivityLogEntryViewModel>();
         }
 
         /// <summary>
@@ -113,12 +119,7 @@ namespace SecureLoginApp1.Pages
         /// <summary>
         /// Recent activity entries to display on the dashboard.
         /// </summary>
-        public List<ActivityEntry> Activity { get; }
-
-        /// <summary>
-        /// Represents a simple activity entry.
-        /// </summary>
-        public record ActivityEntry(string Title, DateTime? Timestamp, string? Details = null);
+        public List<ActivityLogEntryViewModel> Activity { get; }
 
         /// <summary>
         /// Handles GET requests and prepares the dashboard view model.
@@ -145,16 +146,26 @@ namespace SecureLoginApp1.Pages
 
             DaysAsMember = (int)(DateTime.UtcNow - CreatedDate).TotalDays;
 
-            // Build activity list
+            // Build the activity list from real logged events, plus the one fact that
+            // predates event logging (account creation isn't itself a logged event).
+            var loggedActivity = await _activityLogService.GetRecentAsync(user.Id, MaxActivityEntries);
             Activity.Clear();
-            Activity.Add(new ActivityEntry("Account Created", CreatedDate, null));
-            if (LastLogin.HasValue)
-            {
-                Activity.Add(new ActivityEntry("Last Login", LastLogin.Value, null));
-            }
-            // ProfileUpdated is not tracked explicitly; show placeholder when not available
-            Activity.Add(new ActivityEntry("Profile Updated", null, "Not tracked"));
+            Activity.Add(new ActivityLogEntryViewModel("Account Created", CreatedDate));
+            Activity.AddRange(loggedActivity.Select(log =>
+                new ActivityLogEntryViewModel(FriendlyActivityTitle(log.Type), log.TimestampUtc, log.Description)));
+
+            var ordered = Activity.OrderByDescending(a => a.TimestampUtc ?? DateTime.MinValue).Take(MaxActivityEntries).ToList();
+            Activity.Clear();
+            Activity.AddRange(ordered);
         }
+
+        private static string FriendlyActivityTitle(string type) => type switch
+        {
+            "Login" => "Login",
+            "PasswordChanged" => "Password Changed",
+            "ProfileUpdated" => "Profile Updated",
+            _ => type
+        };
 
         /// <summary>
         /// Resends the email confirmation link, rate-limited to once per <see cref="ResendCooldown"/>.

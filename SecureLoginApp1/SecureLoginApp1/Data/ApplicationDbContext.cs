@@ -10,5 +10,7 @@ namespace SecureLoginApp1.Data
             : base(options)
         {
         }
+
+        public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
     }
 }

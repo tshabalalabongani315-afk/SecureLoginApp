@@ -12,6 +12,7 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 - Password hashing
 - User profile management
 - Change password
+- Event-driven activity logging (real Dashboard timeline)
 - Role-based authorization
 - Dashboard for authenticated users
 - Responsive UI

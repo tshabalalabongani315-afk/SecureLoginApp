@@ -71,8 +71,9 @@ namespace SecureUserPortal.Tests
 
             var userServiceMock = new Mock<IUserService>();
             var emailSenderMock = new Mock<IEmailSender>();
+            var activityLogServiceMock = new Mock<IActivityLogService>();
 
-            var model = new SecureLoginApp1.Pages.DashboardModel(userServiceMock.Object, userManagerMock.Object, emailSenderMock.Object);
+            var model = new SecureLoginApp1.Pages.DashboardModel(userServiceMock.Object, userManagerMock.Object, emailSenderMock.Object, activityLogServiceMock.Object);
             PageModelTestSetup.Attach(model);
 
             await model.OnPostResendConfirmationAsync();
@@ -90,8 +91,9 @@ namespace SecureUserPortal.Tests
 
             var userServiceMock = new Mock<IUserService>();
             var emailSenderMock = new Mock<IEmailSender>();
+            var activityLogServiceMock = new Mock<IActivityLogService>();
 
-            var model = new SecureLoginApp1.Pages.DashboardModel(userServiceMock.Object, userManagerMock.Object, emailSenderMock.Object);
+            var model = new SecureLoginApp1.Pages.DashboardModel(userServiceMock.Object, userManagerMock.Object, emailSenderMock.Object, activityLogServiceMock.Object);
             PageModelTestSetup.Attach(model);
 
             await model.OnPostResendConfirmationAsync();
