@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # User-uploaded profile photos (local file storage)
 SecureLoginApp1/SecureLoginApp1/wwwroot/uploads/
+
+# Local Claude Code dev-server config
+.claude/
