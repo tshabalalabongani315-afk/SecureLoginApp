@@ -6,6 +6,7 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 
 - Secure user registration
 - Email confirmation with resend flow
+- Forgot-password / reset-password flow
 - User login and logout
 - ASP.NET Core Identity authentication
 - Password hashing
@@ -76,7 +77,6 @@ wwwroot/
 
 - Profile image upload
 - Dark mode
-- Password reset
 - Two-factor authentication
 - Admin dashboard
 - Activity logs
