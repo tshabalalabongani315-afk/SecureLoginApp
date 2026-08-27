@@ -16,8 +16,9 @@ A modern ASP.NET Core 8 Razor Pages application that demonstrates secure user au
 - Two-factor authentication (TOTP authenticator apps)
 - Profile photo upload (pluggable storage backend)
 - Role-based authorization
-- Dashboard for authenticated users
-- Responsive UI
+- Dashboard with stat-card grid, activity timeline, and profile summary
+- Custom design system (Manrope/Inter, token-based theme, toast notifications)
+- Responsive, mobile-friendly UI
 - SQL Server integration
 - Entity Framework Core
 

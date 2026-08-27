@@ -20,9 +20,15 @@
     <li class="nav-item d-flex align-items-center">
         @if (!string.IsNullOrEmpty(currentUser?.ProfileImageUrl))
         {
-            <img src="@currentUser.ProfileImageUrl" alt="Profile" class="rounded-circle me-1" style="width:28px;height:28px;object-fit:cover;" />
+            <img src="@currentUser.ProfileImageUrl" alt="Profile" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;" />
         }
-        <span class="nav-link text-dark">@User.Identity?.Name</span>
+        else
+        {
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2" style="width:28px;height:28px;font-size:12px;font-weight:700;background-color:var(--accent-soft);color:var(--accent);">
+                @NavInitials(currentUser?.FirstName, currentUser?.LastName, currentUser?.Email)
+            </span>
+        }
+        <span class="nav-link text-dark p-0">@User.Identity?.Name</span>
     </li>
     <li class="nav-item">
         <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" method="post">
@@ -40,3 +46,14 @@ else
     </li>
 }
 </ul>
+
+@functions {
+    private static string NavInitials(string? firstName, string? lastName, string? email)
+    {
+        var initials = string.Empty;
+        if (!string.IsNullOrWhiteSpace(firstName)) initials += firstName.Trim()[0];
+        if (!string.IsNullOrWhiteSpace(lastName)) initials += lastName.Trim()[0];
+        if (initials.Length > 0) return initials.ToUpperInvariant();
+        return !string.IsNullOrWhiteSpace(email) ? email.Trim()[0].ToString().ToUpperInvariant() : "?";
+    }
+}

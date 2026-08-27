@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SecureLoginApp1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SecureLoginApp1.styles.css" asp-append-version="true" />
@@ -31,18 +34,13 @@
             </div>
         </nav>
     </header>
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="toast-status" role="status" id="statusToast">
+            @TempData["StatusMessage"]
+        </div>
+    }
     <div class="container">
-        @if (TempData["StatusMessage"] != null)
-        {
-            <div class="row">
-                <div class="col-12">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @TempData["StatusMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            </div>
-        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

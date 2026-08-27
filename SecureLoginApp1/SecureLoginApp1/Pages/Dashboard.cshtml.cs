@@ -102,26 +102,6 @@ namespace SecureLoginApp1.Pages
         public DateTime ServerDateTime { get; private set; }
 
         /// <summary>
-        /// Gets the number of days the user has been a member.
-        /// </summary>
-        public int DaysAsMember { get; private set; }
-
-        /// <summary>
-        /// Gets a placeholder string for total successful logins.
-        /// </summary>
-        public string TotalSuccessfulLogins { get; private set; } = "N/A";
-
-        /// <summary>
-        /// Gets the account status label.
-        /// </summary>
-        public string AccountStatus { get; private set; } = "Active";
-
-        /// <summary>
-        /// Gets the authentication method label.
-        /// </summary>
-        public string AuthenticationMethod { get; private set; } = "ASP.NET Identity";
-
-        /// <summary>
         /// Recent activity entries to display on the dashboard.
         /// </summary>
         public List<ActivityLogEntryViewModel> Activity { get; }
@@ -149,8 +129,6 @@ namespace SecureLoginApp1.Pages
             EmailConfirmed = user.EmailConfirmed;
             TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
             Initials = BuildInitials(user.FirstName, user.LastName);
-
-            DaysAsMember = (int)(DateTime.UtcNow - CreatedDate).TotalDays;
 
             // Build the activity list from real logged events, plus the one fact that
             // predates event logging (account creation isn't itself a logged event).
