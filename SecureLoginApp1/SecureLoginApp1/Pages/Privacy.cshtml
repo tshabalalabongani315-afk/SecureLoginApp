@@ -1,8 +1,16 @@
-﻿@page
+@page
 @model PrivacyModel
 @{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="form-card form-card--wide">
+    <h1>@ViewData["Title"]</h1>
+    <p class="subtitle">
+        SecureUserPortal is a demo/portfolio project, not a production service. It stores the
+        account information you provide (name, email, phone number, profile photo) and a log of
+        account activity (logins, password changes, profile updates) so those features can be
+        demonstrated. Don't use real personal data you wouldn't want stored in a non-production
+        environment.
+    </p>
+</div>

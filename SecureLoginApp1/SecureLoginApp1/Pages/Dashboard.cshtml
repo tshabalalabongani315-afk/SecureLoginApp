@@ -107,13 +107,5 @@
                 </ul>
             </div>
         </div>
-<h1>Dashboard</h1>
-
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Welcome, @Model.FullName</h5>
-        <p class="card-text"><strong>Email:</strong> @Model.Email</p>
-        <p class="card-text"><strong>Account created:</strong> @Model.CreatedDate.ToString("g")</p>
-        <p class="card-text"><strong>Last login:</strong> @(Model.LastLogin.HasValue ? Model.LastLogin.Value.ToString("g") : "Never")</p>
     </div>
 </div>

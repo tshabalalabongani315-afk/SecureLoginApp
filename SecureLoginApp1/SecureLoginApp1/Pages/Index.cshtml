@@ -1,10 +1,68 @@
-﻿@page
+@page
+@using Microsoft.AspNetCore.Identity
+@using SecureLoginApp1.Models
+@inject UserManager<ApplicationUser> UserManager
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Welcome";
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var firstName = isSignedIn ? (await UserManager.GetUserAsync(User))?.FirstName : null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="hero">
+    <h1>
+        @if (isSignedIn && !string.IsNullOrWhiteSpace(firstName))
+        {
+            <text>Welcome back, @firstName.</text>
+        }
+        else
+        {
+            <text>Your account, secured properly.</text>
+        }
+    </h1>
+    <p class="lead">
+        SecureUserPortal wraps ASP.NET Core Identity with email verification, two-factor
+        authentication, password recovery, and a real activity log &mdash; so your account
+        is protected the way it should be, out of the box.
+    </p>
+
+    @if (isSignedIn)
+    {
+        <a class="btn btn-primary btn-lg" asp-page="/Dashboard">Go to Dashboard</a>
+    }
+    else
+    {
+        <a class="btn btn-primary btn-lg me-2" asp-area="Identity" asp-page="/Account/Register">Create free account</a>
+        <a class="btn btn-outline-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+    }
+</section>
+
+<div class="row g-3 mb-5">
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3Z" /><path d="m9 12 2 2 4-4" /></svg>
+            </div>
+            <h3>Verified &amp; recoverable</h3>
+            <p>Email confirmation on sign-up plus a self-service password reset flow that never reveals whether an account exists.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+            </div>
+            <h3>Two-factor authentication</h3>
+            <p>Add an authenticator app for a second layer of protection, with a QR code or manual key setup.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+            </div>
+            <h3>Real activity history</h3>
+            <p>Every login, password change, and profile update is logged, so you always know what happened on your account.</p>
+        </div>
+    </div>
 </div>

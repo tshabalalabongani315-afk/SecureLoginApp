@@ -4,20 +4,25 @@
     ViewData["Title"] = "Two-factor authentication";
 }
 
-<h1>Two-factor authentication</h1>
+<div class="form-card text-center">
+    <h1>Two-factor authentication</h1>
 
-@if (Model.Is2faEnabled)
-{
-    <p>
-        <span class="badge bg-success">Enabled</span>
-        Two-factor authentication is protecting your account with an authenticator app.
-    </p>
-    <form method="post" asp-page-handler="Disable2fa">
-        <button type="submit" class="btn btn-outline-danger">Disable two-factor authentication</button>
-    </form>
-}
-else
-{
-    <p><span class="badge bg-secondary">Not enabled</span> Add an authenticator app for an extra layer of security.</p>
-    <a class="btn btn-primary" asp-page="./EnableAuthenticator">Set up authenticator app</a>
-}
+    @if (Model.Is2faEnabled)
+    {
+        <p class="subtitle">
+            <span class="badge bg-success">Enabled</span>
+            Your account is protected with an authenticator app.
+        </p>
+        <form method="post" asp-page-handler="Disable2fa">
+            <button type="submit" class="btn btn-outline-danger w-100">Disable two-factor authentication</button>
+        </form>
+    }
+    else
+    {
+        <p class="subtitle">
+            <span class="badge bg-secondary">Not enabled</span>
+            Add an authenticator app for an extra layer of security.
+        </p>
+        <a class="btn btn-primary w-100" asp-page="./EnableAuthenticator">Set up authenticator app</a>
+    }
+</div>

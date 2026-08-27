@@ -4,13 +4,11 @@
     ViewData["Title"] = "Manage your account";
 }
 
-<h1>Manage your account</h1>
+<div class="form-card">
+    <h1>Manage your account</h1>
 
-<div>
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>User Name:</strong> @Model.UserName</p>
-</div>
+    <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
+    <p class="mb-4"><strong>User name:</strong> @Model.UserName</p>
 
-<div>
-    <a asp-page="/Account/Manage/ChangePassword" asp-area="Identity" class="btn btn-link">Change your password</a>
+    <a asp-page="/Account/Manage/ChangePassword" asp-area="Identity" class="btn btn-outline-primary w-100">Change your password</a>
 </div>

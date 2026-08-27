@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace SecureLoginApp1.Pages
 {
-    public class IndexModel : PageModel
+    [Authorize]
+    public class SettingsModel : PageModel
     {
         public void OnGet()
         {
